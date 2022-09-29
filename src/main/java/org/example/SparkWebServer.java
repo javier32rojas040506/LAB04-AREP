@@ -1,12 +1,15 @@
 package org.example;
 
-import static spark.Spark.get;
-import static spark.Spark.port;
+import static spark.Spark.*;
+
 public class SparkWebServer {
 
     public static void main(String... args){
         port(getPort());
-        get("hello", (req,res) -> "Hello Docker!");
+        get("hello", (req, res) -> "Hello Docker!");
+        post("/api/message", (req, res) -> {
+           return "ok";
+        });
     }
 
 
