@@ -1,14 +1,45 @@
 version: '2'
-
-
 services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: web
+      dockerfile: src/main/resources/static/Dockerfile
+    container_name: client
     ports:
-      - "8087:6000"
+      - "80:80"
+
+  round-robin:
+    build:
+      context: .
+      dockerfile: src/main/java/org/example/roundrobin/Dockerfile
+    container_name: round-robin
+    ports:
+      - "8080:8080"
+
+  log-service1:
+    build:
+      context: .
+      dockerfile: src/main/java/org/example/logservice/Dockerfile
+    container_name: log-service1
+    ports:
+      - "35001:35001"
+
+  log-service2:
+    build:
+      context: .
+      dockerfile: src/main/java/org/example/logservice/Dockerfile
+    container_name: log-service2
+    ports:
+      - "35002:35002"
+
+  log-service3:
+    build:
+      context: .
+      dockerfile: src/main/java/org/example/logservice/Dockerfile
+    container_name: log-service3
+    ports:
+      - "35003:35003"
+
   db:
     image: mongo:3.6.1
     container_name: db
