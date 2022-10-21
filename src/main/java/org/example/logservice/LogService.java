@@ -3,6 +3,7 @@ package org.example.logservice;
 import com.google.gson.Gson;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -47,7 +48,7 @@ public class LogService {
                     body = body.replace("}","");
                     body = body.replaceAll("\"","");
                     String[] data = body.split(":");
-                    MongoDatabase dbmongo = openConnection();
+                    MongoDatabase dbmongo = createConnection();/// cambiar si se cambia la db
                     MongoCollection table = dbmongo.getCollection("messages");
                     Document document = new Document().append(data[0], data[1]);
                     document.append("date", new Date());
@@ -56,7 +57,7 @@ public class LogService {
                 });
                 Object gson = new Gson();
                 get("", (req, res) -> {
-                    MongoDatabase database = openConnection();
+                    MongoDatabase database = createConnection();/// cambiar si se cambia la db
                     //Obtener objeto colección. Si no existe lo crea
                     MongoCollection<Document> messages = database.getCollection("messages");
 
@@ -92,13 +93,24 @@ public class LogService {
     }
 
     public static MongoDatabase openConnection(){
-        ConnectionString connectionString = new ConnectionString("mongodb://@192.168.3.25:27017,ac-dwefend-shard-00-01.mblvif0.mongodb.net:27017,ac-dwefend-shard-00-02.mblvif0.mongodb.net:27017/?ssl=true&replicaSet=atlas-wk6jcp-shard-0&authSource=admin&retryWrites=true&w=majority");
+        ConnectionString connectionString = new ConnectionString("mongodb://pacho:pacho@ac-dwefend-shard-00-00.mblvif0.mongodb.net:27017,ac-dwefend-shard-00-01.mblvif0.mongodb.net:27017,ac-dwefend-shard-00-02.mblvif0.mongodb.net:27017/?ssl=true&replicaSet=atlas-wk6jcp-shard-0&authSource=admin&retryWrites=true&w=majority");
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
         MongoClient mongoClient = MongoClients.create(settings);
         MongoDatabase database = mongoClient.getDatabase("arep_lab04");
         return database;
+    }
+
+    public static MongoDatabase createConnection() {
+        MongoDatabase mongoDatabase = null;
+        try {
+            MongoClient mongoClient = MongoClients.create("mongodb://44.211.175.160:27017/?maxPoolSize=20&w=majority");
+            mongoDatabase = mongoClient.getDatabase("arep_lab04");
+        } catch (MongoException ex){
+            System.out.println(ex.toString());
+        }
+        return  mongoDatabase;
     }
 
 
